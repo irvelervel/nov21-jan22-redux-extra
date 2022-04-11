@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { FaShoppingCart } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
 import { setUsernameActionWithThunk } from '../redux/actions'
 import { Alert } from 'react-bootstrap'
@@ -14,29 +14,37 @@ import { Alert } from 'react-bootstrap'
 // CartIndicatore just needs a mapStateToProps function, because
 // we don't need "write access" from here
 
-const mapStateToProps = (state) => ({
-  // every key of this object will become a props for CartIndicator
-  cartLength: state.cart.products.length,
-  // cartLength is now a PROP for CartIndicator!
-  username: state.user.name,
-  isError: state.book.isError,
-})
+// const mapStateToProps = (state) => ({
+//   // every key of this object will become a props for CartIndicator
+//   cartLength: state.cart.products.length,
+//   // cartLength is now a PROP for CartIndicator!
+//   username: state.user.name,
+//   isError: state.book.isError,
+// })
 
-const mapDispatchToProps = (dispatch) => ({
-  setUsername: (name) => {
-    dispatch(setUsernameActionWithThunk(name))
-  },
-})
+// const mapDispatchToProps = (dispatch) => ({
+//   setUsername: (name) => {
+//     dispatch(setUsernameActionWithThunk(name))
+//   },
+// })
 
-const CartIndicator = ({ cartLength, username, setUsername, isError }) => {
+const CartIndicator = () => {
   const navigate = useNavigate()
   const [name, setName] = useState('')
+
+  // state here is the exact same object we were getting in mapStateToProps
+  const cartLength = useSelector((state) => state.cart.products.length)
+  const username = useSelector((state) => state.user.name)
+  const isError = useSelector((state) => state.book.isError)
+
+  const dispatch = useDispatch()
 
   const handleSubmit = (e) => {
     console.log(e)
     e.preventDefault()
     // here I want to submit my username to the redux store!
-    setUsername(name)
+    // setUsername(name)
+    dispatch(setUsernameActionWithThunk(name))
   }
 
   return (
@@ -67,4 +75,4 @@ const CartIndicator = ({ cartLength, username, setUsername, isError }) => {
   )
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CartIndicator)
+export default CartIndicator
