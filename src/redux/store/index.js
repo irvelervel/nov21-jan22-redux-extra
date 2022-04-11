@@ -4,6 +4,12 @@ import cartReducer from '../reducers/cart'
 
 import thunk from 'redux-thunk'
 import bookReducer from '../reducers/book'
+
+import { persistReducer, persistStore } from 'redux-persist'
+
+import localStorage from 'redux-persist/lib/storage'
+// this is the localStorage engine feature from redux-persist
+
 // __REDUX_DEVTOOLS_EXTENSION_COMPOSE__ is the compose function from the extension
 // if we have the extension installed, we have to use it otherwise we lose
 // the extension functionality (the redux devTools)
@@ -49,13 +55,20 @@ const bigReducer = combineReducers({
 // each key of the object you provide to combineReducers has to
 // match a sub-object key of your redux store!
 
-const configureStore = createStore(
+const persistConfig = {
+  key: 'root',
+  storage: localStorage,
+}
+
+const persistedReducer = persistReducer(persistConfig, bigReducer)
+
+export const configureStore = createStore(
   // 1) the main reducer of the application (or the only one)
-  bigReducer,
+  persistedReducer,
   // 2) the initial state for your redux store
   initialState,
   // 3) an enhancer function, for extensions or middlewares
   composeFunctionThatAlwaysWorks(applyMiddleware(thunk))
 )
 
-export default configureStore
+export const persistor = persistStore(configureStore)
