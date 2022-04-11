@@ -8,6 +8,7 @@ import bookReducer from '../reducers/book'
 import { persistReducer, persistStore } from 'redux-persist'
 
 import localStorage from 'redux-persist/lib/storage'
+import { encryptTransform } from 'redux-persist-transform-encrypt'
 // this is the localStorage engine feature from redux-persist
 
 // __REDUX_DEVTOOLS_EXTENSION_COMPOSE__ is the compose function from the extension
@@ -58,6 +59,15 @@ const bigReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: localStorage,
+  transforms: [
+    encryptTransform({
+      secretKey: process.env.REACT_APP_SECRET_KEY,
+      // you should not write the secretKey here in the code
+      onError: (error) => {
+        console.log(error)
+      },
+    }),
+  ],
 }
 
 const persistedReducer = persistReducer(persistConfig, bigReducer)
